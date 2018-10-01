@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin</title>
+    <!-- Added link to the jQuery Library -->
+    <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+        crossorigin="anonymous"></script>
+    <!-- Added a link to Bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+    <script src="https://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0" type="text/javascript" charset="UTF-8"></script>
+</head>
+
+<body>
+
+    <div>
+        <div class="jumbotron">
+
+            <h1 class="text-center">Show the Orders</h1>
+
+            <div class="text-center" id="stuff">
+
+                <!-- Here we have our button with id random-button -->
+                <button id="order-button" class="btn btn-primary btn-lg">
+                    <h1>ORDERS</h1>
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="text-center" id="new-order">
+
+
+        </div>
+        <br>
+        <div>
+            <div class="jumbotron">
+
+                <h1 class="text-center">Delete an Order</h1>
+
+                <div class="text-center" id="stuff">
+
+                    <!-- Here we have our button with id random-button -->
+                    <button id="delete-button" class="btn btn-primary btn-lg">
+                        <h1>DELETE</h1>
+                    </button>
+
+                </div>
+
+                <input class="form-control" type="text" placeholder="Default input" id="deleteMe">
+                </input>
+            </div>
+
+        </div>
+        <br>
+
+        <div class="jumbotron">
+
+            <h1 class="text-center">Show Map</h1>
+
+            <div class="text-center">
+
+                <!-- Here we have our button with id random-button -->
+                <button id="map-button" class="btn btn-primary btn-lg">
+                    <h1>MAP</h1>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center" id="map" style="position: center; width: 1475px; height: 500px;"></div>
+
+</body>
+
+</body>
+
+<script>
+    var pinInfobox;
+    var buildingOne = 0;
+    var buildingTwo = 0;
+    var buildingThree = 0;
+    var buildingFour = 0;
+    var buildingFive = 0;
+    var buildingSix = 0;
+
+    $.get("/api/orders", function (data) {
+        console.log(data);
+        console.log(data[1].building)
+
+        for (i = 0; i < 100; i++) {
+            if (data[i].building == 1) {
+                buildingOne++
+            } else if (data[i].building == 2) {
+                buildingTwo++
+            } else if (data[i].building == 3) {
+                buildingThree++
+            } else if (data[i].building == 4) {
+                buildingFour++
+            } else if (data[i].building == 5) {
+                buildingFive++
+            } else if (data[i].building == 6) {
+                buildingSix++
+            }
+        }
+    });
+
+    $("#map-button").on("click",
+
+
+        function GetMap() {
+
+            var bOneAmount = buildingOne.toString();
+            var bTwoAmount = buildingTwo.toString();
+            var bThreeAmount = buildingThree.toString();
+            var bFourAmount = buildingFour.toString();
+            var bFiveAmount = buildingFive.toString();
+            var bSixAmount = buildingSix.toString();
+
+
+
+            var pushpinInfos = [];
+            pushpinInfos[0] = {
+                'lat': 39.620020,
+                'lng': -104.896038,
+                'title': '5300 DTC Pkwy',
+                'description': bOneAmount
+            };
+            pushpinInfos[1] = {
+                'lat': 39.613071,
+                'lng': -104.894307,
+                'title': '5613 DTC PKWY',
+                'description': bTwoAmount
+            };
+            pushpinInfos[2] = {
+                'lat': 39.618144,
+                'lng': -104.896345,
+                'title': '4601 DTC PKWY',
+                'description': bThreeAmount
+            };
+            pushpinInfos[3] = {
+                'lat': 39.627930,
+                'lng': -104.896300,
+                'title': '7900 East Union Avenue',
+                'description': bFourAmount
+            };
+            pushpinInfos[4] = {
+                'lat': 39.611900,
+                'lng': -104.887130,
+                'title': '5775 DTC Blvd',
+                'description': bFiveAmount
+            };
+            pushpinInfos[5] = {
+                'lat': 39.629130,
+                'lng': -104.893930,
+                'title': '8100 East Union Avenue',
+                'description': bSixAmount
+            };
+
+
+            var infoboxLayer = new Microsoft.Maps.EntityCollection();
+            var pinLayer = new Microsoft.Maps.EntityCollection();
+            var apiKey = "AtWJG1uzq4rqQaftoe2MQVzNJN2SVic1QXgBO-5oaJsBRaHC2osRfoUKbvYBordM";
+            var map = new Microsoft.Maps.Map(document.getElementById("map"), {
+                credentials: apiKey
+            });
+            // Create the info box for the pushpin
+            pinInfobox = new Microsoft.Maps.Infobox(new Microsoft.Maps.Location(0, 0), {
+                visible: false
+            });
+            infoboxLayer.push(pinInfobox);
+            var locs = [];
+            for (var i = 0; i < pushpinInfos.length; i++) {
+                locs[i] = new Microsoft.Maps.Location(pushpinInfos[i].lat, pushpinInfos[i].lng);
+                var pin = new Microsoft.Maps.Pushpin(locs[i]);
+                pin.Title = pushpinInfos[i].title;
+                pin.Description = pushpinInfos[i].description;
+                pin.Text = pushpinInfos[i].description;
+                pinLayer.push(pin);
+                Microsoft.Maps.Events.addHandler(pin, 'click', displayInfobox);
+            }
+            map.entities.push(pinLayer);
+            map.entities.push(infoboxLayer);
+            var bestview = Microsoft.Maps.LocationRect.fromLocations(locs);
+            map.setView({
+                center: bestview.center,
+                zoom: 10
+            });
+        });
+
+    function displayInfobox(e) {
+        pinInfobox.setOptions({
+            title: e.target.Title,
+            description: e.target.Description,
+            visible: true,
+            offset: new Microsoft.Maps.Point(0, 25)
+        });
+        pinInfobox.setLocation(e.target.getLocation());
+    }
+
+    function hideInfobox(e) {
+        pinInfobox.setOptions({
+            visible: false
+        });
+    }
+    $("#order-button").on("click", function () {
+        $.get("/api/orders", function (data) {
+            console.log(data);
+            for (i = 0; i < 100; i++) {
+                $("#new-order").append($("<div>" + "ORDER FOR: " + JSON.stringify(data[i].name) +
+                    "<br>" + " SANDWICHES: " + JSON.stringify(data[i].sandwiches) + "<br>" +
+                    " DRINKS: " + JSON.stringify(data[i].drinks) + "<br>" + " SIDES: " + JSON.stringify(
+                        data[i].sides) + "<br>" + "-------" + "<br>" + "</div>"))
+            }
+        });
+    });
+
+    //Delete a life of information
+
+    $("#delete-button").on("click", function (name) {
+        var name = $("#deleteMe").val();
+        console.log(name)
+        $.ajax({
+            method: "DELETE",
+            url: "/api/orders/" + name
+        })
+    });
+</script>
+
+</html>

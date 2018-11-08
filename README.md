@@ -2,7 +2,7 @@
 
 [Demo](https://cryptic-ocean-96863.herokuapp.com/)
 
-Concept for a Sandwich shop that only delivers for one hour each day. Like the countdown says everyone has from 12pm to 10am to submit their orders.
+Concept for a Sandwich shop that only delivers for one hour each day. If you don't order by 11am the order goes to the
 
 ## Built With
 

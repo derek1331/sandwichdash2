@@ -2,7 +2,7 @@
 
 [Demo](https://cryptic-ocean-96863.herokuapp.com/)
 
-Concept for a Sandwich shop that only delivers for one hour each day. If you don't order by 11am the order goes to the
+Concept for a Sandwich shop that only delivers for one hour each day. If you don't order by 11am the order goes to the next day.
 
 ## Built With
 
